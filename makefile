@@ -1,16 +1,16 @@
 
 
-CC=$(CROSS)gcc
+CC=$(CROSS)g++
 LD=$(CROSS)ld
 AR=$(CROSS)ar
 PKG_CONFIG=$(CROSS)pkg-config
 
-FILES=main.c
+FILES=Snake.cpp Visual.cpp main.cpp
 
 PKGS=sdl2 SDL2_net
 
-CFLAGS=-Wall -Wextra -pedantic -std=c99 `$(PKG_CONFIG) --cflags $(PKGS)`
-CRFLAGS=-Wall -Wextra -pedantic -O2 -std=c99  `$(PKG_CONFIG) --cflags --static $(PKGS)`
+CFLAGS=-Wall -Wextra -pedantic -std=c++11 `$(PKG_CONFIG) --cflags $(PKGS)`
+CRFLAGS=-Wall -Wextra -pedantic -O2 -std=c++11  `$(PKG_CONFIG) --cflags --static $(PKGS)`
 LIBS=`$(PKG_CONFIG) --libs $(PKGS)`
 
 net: $(FILES)

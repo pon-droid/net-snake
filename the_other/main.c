@@ -1,6 +1,7 @@
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_net.h>
 
+
 #define SCR_H (500)
 #define SCR_W (500)
 #define PL_S (.000001)
@@ -9,6 +10,8 @@
 typedef struct Fellow {
 	float x, y;
 } Fellow;
+
+
 
 int run(void){
 	SDL_Event event;
