@@ -1,5 +1,7 @@
 #pragma once
 
+
+
 #define SCR_H (500)
 #define SCR_W (500)
 
@@ -10,3 +12,4 @@
 #define CELL_H (SCR_H/MAP_H)
 
 #define S_SPEED (0.01)
+

@@ -53,7 +53,7 @@ int main(int argc, char **argv){
 	Snake snake(MAP_W/2,MAP_H/2);
 	Visual visual;
 
-	visual.MAP[visual.MAP.size()/2] = 1;
+	visual.MAP[MAP_H/2 * MAP_W + MAP_W/2 + 1] = 1;
 
 	/*
 
@@ -79,7 +79,7 @@ int main(int argc, char **argv){
 
     auto next_time = SDL_GetTicks() + INTERVAL;
     
-	while(run()){
+	while(run() && !(snake.end)){
 /*
         //SDLNet_TCP_Send(client, &friend, sizeof(Fellow));
         //SDLNet_TCP_Recv(client, &brother, sizeof(Fellow));

@@ -15,6 +15,7 @@ struct Visual{
     
 
     std::array<int, (MAP_W*MAP_H)> MAP;
+    bool apple;
 
     Visual();
     void draw_map();

@@ -6,6 +6,7 @@ Visual::Visual(){
     rend = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 
     MAP.fill(0);
+	apple = false;
 
 }
 
@@ -48,9 +49,18 @@ void Visual::draw_snake(Snake s){
 
 void Visual::update_state(Snake& s){
 	int element = (s.body.front().y) * MAP_W + (s.body.front().x);
+
 	if(MAP[element]){
-		std::cout << "HIT\n";
+		s.hit = true;
+		apple = false;
+		MAP.fill(0);
 	}
+
+	if(!(apple)){
+		MAP[rand() % (MAP_W * MAP_H)] = 1;
+		apple = true;
+	}
+
 }
 
 
