@@ -55,7 +55,7 @@ int main(int argc, char **argv){
 
 	visual.MAP[MAP_H/2 * MAP_W + MAP_W/2 + 1] = 1;
 
-	/*
+	
 
 	TCPsocket serv = begin_host(NULL,1234);
 	TCPsocket client;
@@ -68,7 +68,7 @@ int main(int argc, char **argv){
 			break;
 		}
 	}
-	*/
+	
 	/*
     double t = 0.0;
     const double dt = 0.01;
@@ -78,8 +78,10 @@ int main(int argc, char **argv){
 	*/
 
     auto next_time = SDL_GetTicks() + INTERVAL;
+	int bytes = 0;
+
     
-	while(run() && !(snake.end)){
+	while(run()){
 /*
         //SDLNet_TCP_Send(client, &friend, sizeof(Fellow));
         //SDLNet_TCP_Recv(client, &brother, sizeof(Fellow));
@@ -95,7 +97,14 @@ int main(int argc, char **argv){
           accum -= dt;
           t += dt;        	
         }
-*/
+*/      
+		bytes = snake.body.size();
+		SDLNet_TCP_Send(client,&bytes, sizeof(int));
+		for(const auto& i: snake.body){
+			SDLNet_TCP_Send(client,&i,sizeof(Segment));
+		}
+		
+
 
 		snake.update();
 

@@ -39,11 +39,12 @@ void Snake::control(){
 }
 
 void Snake::update(){
+
     control();
+
 
     body.push_front({body.front().x + dx, body.front().y + dy});
 
-    const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
     if(hit){
         hit = false;
@@ -53,11 +54,11 @@ void Snake::update(){
     body.pop_back();
 
    
-    if(body.front().x >= MAP_W || body.front().x < 0 || body.front().y >= MAP_H || body.front().y < 0){
-            end = true;
-    }
+   if(body.front().x >= MAP_W || body.front().x < 0 || body.front().y >= MAP_H || body.front().y < 0){
+           end = true;
+   }
 
-
+/*
     std::unordered_map<Segment,int,Body_hash> doubles;
 
 
@@ -71,8 +72,8 @@ void Snake::update(){
             end = true;
         }
     }
+*/
 
-    std::cout << dx << " " << dy << "\n";
 
 
 
