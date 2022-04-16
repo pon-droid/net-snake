@@ -7,7 +7,7 @@ PKG_CONFIG=$(CROSS)pkg-config
 
 FILES=Snake.cpp Visual.cpp main.cpp
 
-PKGS=sdl2 SDL2_net
+PKGS=sdl2 SDL2_net SDL2_ttf
 
 CFLAGS=-Wall -Wextra -pedantic -std=c++11 `$(PKG_CONFIG) --cflags $(PKGS)`
 CRFLAGS=-Wall -Wextra -pedantic -O2 -std=c++11  `$(PKG_CONFIG) --cflags --static $(PKGS)`

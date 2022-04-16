@@ -1,7 +1,7 @@
 #include"Snake.h"
 #include <unordered_map>
 
-Snake::Snake(int x, int y){
+Snake::Snake(int x, int y, SDL_Colour col){
 
     dx = 0; dy = -1;
 
@@ -10,6 +10,8 @@ Snake::Snake(int x, int y){
     body.push_back({x,y+2});
 
     hit = end = false;
+
+    colour = col;
 
 }
 
@@ -54,15 +56,13 @@ void Snake::update(){
     body.pop_back();
 
    
-   if(body.front().x >= MAP_W || body.front().x < 0 || body.front().y >= MAP_H || body.front().y < 0){
-           end = true;
-   }
+    if(body.front().x >= MAP_W || body.front().x < 0 || body.front().y >= MAP_H || body.front().y < 0){
+        end = true;
+    }
 
-/*
+
     std::unordered_map<Segment,int,Body_hash> doubles;
 
-
-    
 
     for(const auto& i: body){
         doubles[i]++;
@@ -72,7 +72,7 @@ void Snake::update(){
             end = true;
         }
     }
-*/
+
 
 
 

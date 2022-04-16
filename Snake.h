@@ -13,13 +13,15 @@ struct Segment{
     }
 };
 
-
+// Add snake "owner" variable to Segment
+// Maybe a shared_ptr? since multiple segments "share" the same snake owner
 
 struct Snake {
-    Snake(int x, int y);
+    Snake(int x, int y, SDL_Colour col);
 
 	std::deque<Segment> body;
 	int dx, dy;
+    SDL_Colour colour;
 
     bool hit;
     bool end;
@@ -33,6 +35,6 @@ struct Snake {
 struct Body_hash{
     size_t operator()(const Segment& s) const
     {
-        return s.x / s.y;
+        return s.x * s.y;
     }
 };

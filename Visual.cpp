@@ -8,6 +8,17 @@ Visual::Visual(){
     MAP.fill(0);
 	apple = false;
 
+	TTF_Font *font = TTF_OpenFont("font.ttf",10);
+
+	SDL_Color colour = {255,255,255,255};
+	SDL_Surface *surf = TTF_RenderText_Solid(font, "Utter Failure", colour);
+
+	text = SDL_CreateTextureFromSurface(rend, surf);
+
+	TTF_CloseFont(font);
+
+	SDL_FreeSurface(surf);
+
 }
 
 
@@ -34,7 +45,7 @@ void Visual::draw_map(){
 }
 
 void Visual::draw_snake(Snake s){
-	SDL_SetRenderDrawColor(rend,0,255,0,255);
+	SDL_SetRenderDrawColor(rend,s.colour.r,s.colour.g,s.colour.b,s.colour.a);
 
 	SDL_Rect rect;
 	rect.w = CELL_W;
@@ -63,13 +74,24 @@ void Visual::update_state(Snake& s){
 
 }
 
+void Visual::font_render(){
+	SDL_Rect rect;
+	rect.x = SCR_W/3;
+	rect.y = SCR_H/3;
+	rect.w = 250;
+	rect.h = 50;
 
-void Visual::update_buffer(Snake s){
+	SDL_RenderCopy(rend,text,NULL,&rect);
+	SDL_RenderPresent(rend);
+}
+
+void Visual::update_buffer(Snake s, Snake m){
 	SDL_SetRenderDrawColor(rend,0,0,0,255);
 	SDL_RenderClear(rend);
 
 	draw_map();
 	draw_snake(s);
+	draw_snake(m);
 	SDL_RenderPresent(rend);
 
 }
@@ -77,5 +99,6 @@ void Visual::update_buffer(Snake s){
 Visual::~Visual(){
 	SDL_DestroyWindow(win);
 	SDL_DestroyRenderer(rend);
+	SDL_DestroyTexture(text);
 	
 }
