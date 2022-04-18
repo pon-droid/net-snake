@@ -1,32 +1,36 @@
 #pragma once
 
-#include<deque>
-#include<SDL2/SDL.h>
+
 #include "Defines.h"
-#include<iostream>
+
 
 struct Segment{
     int x, y;
+
 
     bool operator==(const Segment& s) const{
         return x == s.x && y == s.y;
     }
 };
 
-
+// Add snake "owner" variable to Segment
+// Maybe a shared_ptr? since multiple segments "share" the same snake owner
 
 struct Snake {
-    Snake(int x, int y, SDL_Colour col);
+    Snake(int x, int y, SDL_Colour col, std::string username);
 
 	std::deque<Segment> body;
 	int dx, dy;
     SDL_Colour colour;
+    std::string name;
 
     bool hit;
     bool end;
 
     void control();
+    void check_col(const std::vector<Snake>& snakes, int element);
     void update();
+    
 
     
 };

@@ -1,19 +1,17 @@
 #pragma once
 
 
-#include<array>
 
 
 #include"Snake.h"
-#include <SDL2/SDL_ttf.h>
-
 
 
 struct Visual{
     SDL_Renderer *rend;
     SDL_Window *win;
 
-    SDL_Texture *text;
+
+    TTF_Font *font;
 
     
 
@@ -22,11 +20,11 @@ struct Visual{
 
     Visual();
     void draw_map();
-    void draw_snake(Snake s);
+    void draw_snake(const Snake& s);
 
-    void update_state(Snake& s);
-    void font_render();
-    void update_buffer(Snake s, Snake m);
+    void update_state(Snake& s, int random);
+    void font_render(const SDL_Colour colour, const std::string info);
+    void update_buffer(const std::vector<Snake>& snakes);
     ~Visual();
     
     

@@ -1,5 +1,15 @@
 #pragma once
 
+#include <string>
+#include <array>
+#include <vector>
+#include <unordered_map>
+#include <deque>
+#include <iostream>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_net.h>
 
 
 #define SCR_H (500)

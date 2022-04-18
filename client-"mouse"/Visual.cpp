@@ -2,23 +2,23 @@
 
 
 Visual::Visual(){
-    win = SDL_CreateWindow("snake",0,0, SCR_W, SCR_H, SDL_WINDOW_SHOWN);
+    win = SDL_CreateWindow("other snake",0,0, SCR_W, SCR_H, SDL_WINDOW_SHOWN);
     rend = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 
     MAP.fill(0);
 	apple = false;
 
-	TTF_Font *font = TTF_OpenFont("font.ttf",10);
-
+	font = TTF_OpenFont("font.ttf",10);
+/*
 	SDL_Color colour = {255,255,255,255};
 	SDL_Surface *surf = TTF_RenderText_Solid(font, "Utter Failure", colour);
 
 	text = SDL_CreateTextureFromSurface(rend, surf);
 
-	TTF_CloseFont(font);
+	
 
 	SDL_FreeSurface(surf);
-
+*/
 }
 
 
@@ -44,7 +44,7 @@ void Visual::draw_map(){
 	}
 }
 
-void Visual::draw_snake(Snake s){
+void Visual::draw_snake(const Snake& s){
 	SDL_SetRenderDrawColor(rend,s.colour.r,s.colour.g,s.colour.b,s.colour.a);
 
 	SDL_Rect rect;
@@ -58,7 +58,7 @@ void Visual::draw_snake(Snake s){
 	}
 }
 
-void Visual::update_state(Snake& s){
+void Visual::update_state(Snake& s, int random){
 	int element = (s.body.front().y) * MAP_W + (s.body.front().x);
 
 	if(MAP[element]){
@@ -68,37 +68,54 @@ void Visual::update_state(Snake& s){
 	}
 
 	if(!(apple)){
-		MAP[rand() % (MAP_W * MAP_H)] = 1;
+		MAP[random] = 1;
 		apple = true;
 	}
 
 }
 
-void Visual::font_render(){
+
+void Visual::font_render(const SDL_Colour colour, const std::string info){
 	SDL_Rect rect;
-	rect.x = SCR_W/3;
-	rect.y = SCR_H/3;
-	rect.w = 250;
+	rect.x = SCR_W/2 - 200;
+	rect.y = SCR_H/2 - 50;
+	rect.w = 300;
 	rect.h = 50;
 
+
+	SDL_Surface *surf = TTF_RenderText_Solid(font, info.c_str(), colour);
+
+	SDL_Texture *text = SDL_CreateTextureFromSurface(rend,surf);
+
+	
+	
 	SDL_RenderCopy(rend,text,NULL,&rect);
 	SDL_RenderPresent(rend);
+
+	SDL_DestroyTexture(text);
+	SDL_FreeSurface(surf);
 }
 
-void Visual::update_buffer(Snake s, Snake m){
+void Visual::update_buffer(const std::vector<Snake>& snakes){
 	SDL_SetRenderDrawColor(rend,0,0,0,255);
 	SDL_RenderClear(rend);
 
 	draw_map();
-	draw_snake(s);
-	draw_snake(m);
+	for(const auto &i: snakes){
+		draw_snake(i);
+	}
 	SDL_RenderPresent(rend);
 
 }
 
 Visual::~Visual(){
-	SDL_DestroyWindow(win);
+	TTF_CloseFont(font);
+	TTF_Quit();
+	
+	//SDLNet_Quit();
+	
 	SDL_DestroyRenderer(rend);
-	SDL_DestroyTexture(text);
+	SDL_DestroyWindow(win);
+	SDL_Quit();
 	
 }
