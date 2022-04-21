@@ -162,6 +162,7 @@ int main(int argc, char **argv){
 		
 
 		SDLNet_TCP_Recv(client, &bytes, sizeof(int));
+		SDLNet_TCP_Recv(client, &snakes.back().hit, sizeof(bool));
 
 		snakes.front().body.resize(bytes);
 
@@ -220,7 +221,7 @@ int main(int argc, char **argv){
 			SDLNet_TCP_Recv(client, &bytes, sizeof(int));
 
 			visual.font_render({255,255,255,255},snakes[bytes].name + " has perished");
-			SDL_Delay(10000);
+			SDL_Delay(1500);
 			
 		}
 

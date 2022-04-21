@@ -171,6 +171,8 @@ int main(int argc, char **argv){
 		bytes = snakes.front().body.size();
 
 		SDLNet_TCP_Send(client, &bytes, sizeof(int));
+		SDLNet_TCP_Send(client, &snakes.back().hit, sizeof(bool));
+
 
 		for(const auto &i: snakes.front().body){
 			SDLNet_TCP_Send(client,&i,sizeof(Segment));
@@ -228,7 +230,7 @@ int main(int argc, char **argv){
 			SDLNet_TCP_Send(client, &bytes, sizeof(int));
 			SDLNet_TCP_Send(client, &a, sizeof(int));
 			visual.font_render({255,255,255,255},snakes[a].name + " has perished");
-			SDL_Delay(10000);
+			SDL_Delay(1500);
 
 			Visual newvisual;
 
