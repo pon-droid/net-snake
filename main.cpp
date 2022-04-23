@@ -1,11 +1,9 @@
-#include "Visual.h"
+#include "Network.h"
 #include <time.h>
 
 #define INTERVAL (60)
 
-enum States {
-	END
-};
+
 
 Uint32 time_left(Uint32 time){
 	auto now = SDL_GetTicks();
@@ -75,12 +73,54 @@ void check_snakes(const std::vector<Snake>& snakes){
 }
 */
 
+enum {LOBBY, GAME};
+
+
+int return_main(){
+		std::cout << "Work\n";
+
+	Network network;
+		std::cout << "Work\n";
+
+
+	std::vector<Snake> snakes;
+	
+		std::cout << "Work\n";
+
+
+	network.connect_clients(2, snakes);
+
+	snakes[0] = Snake(0,0,{255,0,0,255}, "htirpone");
+
+
+	network.setup_players(snakes);
+
+	for(const auto &i: snakes){
+		std::cout << i.name << "\n";
+	}
+	
+	int state = LOBBY;
+
+	while(state != GAME){
+
+	}
+
+
+	return 0;
+}
+
 int main(int argc, char **argv){
 	SDL_Init(SDL_INIT_EVERYTHING);
 	TTF_Init();
 	SDLNet_Init();
 
 	srand(time(NULL));
+
+
+	std::cout << "Work\n";
+	return return_main();
+
+
 
 	
 	std::vector<Snake> snakes;
@@ -232,14 +272,10 @@ int main(int argc, char **argv){
 			visual.font_render({255,255,255,255},snakes[a].name + " has perished");
 			SDL_Delay(1500);
 
-			Visual newvisual;
+		
 
-			visual = newvisual;
-
-			snakes.clear();
-
-			snakes.push_back(snake);
-			snakes.push_back(mouse);
+			snakes[0] = snake;
+			snakes[1] = mouse;
 
 			//return 0;
 		} else {

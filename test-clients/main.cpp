@@ -1,11 +1,9 @@
-#include "Visual.h"
+#include "Network.h"
 #include <time.h>
 
 #define INTERVAL (60)
 
-enum States {
-	END
-};
+
 
 Uint32 time_left(Uint32 time){
 	auto now = SDL_GetTicks();
@@ -75,12 +73,57 @@ void check_snakes(const std::vector<Snake>& snakes){
 }
 */
 
+
+int return_main(){
+	TCPsocket client = begin_host("127.0.0.1", 1234);
+
+	Snake snake(0,0,{255,255,255,255},"dash");
+
+	int size = strlen(snake.name.c_str()) + 1;
+
+	const char *string = snake.name.c_str();
+
+	Segment dir;
+	dir.x = snake.dx;
+	dir.y = snake.dy;
+
+	SDLNet_TCP_Send(client, &size, sizeof(int));
+	SDLNet_TCP_Send(client, string, size);
+	SDLNet_TCP_Send(client, &snake.colour, sizeof(SDL_Colour));
+	
+	//SDLNet_TCP_Send(client, &dir, sizeof(Segment));
+
+	Visual visual;
+
+	std::vector<Snake> snakes;
+	snakes.push_back(snake);
+
+	while(run()){
+		visual.update_buffer(snakes);
+		
+	}
+
+	
+
+
+
+
+
+	return 0;
+}
+
 int main(int argc, char **argv){
 	SDL_Init(SDL_INIT_EVERYTHING);
 	TTF_Init();
 	SDLNet_Init();
 
 	srand(time(NULL));
+
+
+	std::cout << "Work\n";
+	return return_main();
+
+
 
 	
 	std::vector<Snake> snakes;
@@ -96,10 +139,17 @@ int main(int argc, char **argv){
 
 	
 
+	TCPsocket serv = begin_host(NULL,1234);
+	TCPsocket client;
+
 	
-	TCPsocket client = begin_host("101.190.18.1",1234);
 
-
+	while(1){
+		client = SDLNet_TCP_Accept(serv);
+		if(client){
+			break;
+		}
+	}
 	
 	/*
     double t = 0.0;
@@ -156,28 +206,27 @@ int main(int argc, char **argv){
 
 		//snakes.front().update();
 
-		snakes.back().update();
-		
+		int random = rand() % (MAP_W * MAP_H);
 
-		
+		snakes.front().update();
 
-		SDLNet_TCP_Recv(client, &bytes, sizeof(int));
-		SDLNet_TCP_Recv(client, &snakes.back().hit, sizeof(bool));
 
-		snakes.front().body.resize(bytes);
-
-		for(auto &i: snakes.front().body){
-			SDLNet_TCP_Recv(client,&i,sizeof(Segment));
-		}
-
-		bytes = snakes.back().body.size();
+		bytes = snakes.front().body.size();
 
 		SDLNet_TCP_Send(client, &bytes, sizeof(int));
+		SDLNet_TCP_Send(client, &snakes.back().hit, sizeof(bool));
 
-		
 
-		for(const auto& i: snakes.back().body){
-			SDLNet_TCP_Send(client, &i, sizeof(Segment));
+		for(const auto &i: snakes.front().body){
+			SDLNet_TCP_Send(client,&i,sizeof(Segment));
+		}
+
+		SDLNet_TCP_Recv(client, &bytes, sizeof(int));
+
+		snakes.back().body.resize(bytes);
+
+		for(auto& i: snakes.back().body){
+			SDLNet_TCP_Recv(client, &i, sizeof(Segment));
 		}
 
 		/*
@@ -187,47 +236,55 @@ int main(int argc, char **argv){
 			visual.update_state(snakes[i]);
 		}
 		*/
+		if(visual.apple){
+			random = visual.last_pos;
+		}
 
-		//visual.update_state(snakes.back());
-
-		int random = 0;
-
-		visual.MAP.fill(0);
-
-		SDLNet_TCP_Recv(client, &random, sizeof(int));
+		SDLNet_TCP_Send(client, &random, sizeof(int));
 
 
-		visual.MAP[random] = 1;
+		visual.update_state(snakes.back(),random);
+		visual.update_state(snakes.front(),random);
 
 
-
-		
-
-		
 			
 	    visual.update_buffer(snakes);
+
+		snakes.back().check_col(snakes,1);
+		snakes.front().check_col(snakes,0);
 		
 
 		//check_snakes(snakes);
 
 		
 
-		SDLNet_TCP_Recv(client, &bytes, sizeof(int));
-		
-
-
-
-		if(bytes == 1){
-			SDLNet_TCP_Recv(client, &bytes, sizeof(int));
-
-			visual.font_render({255,255,255,255},snakes[bytes].name + " has perished");
-			snakes[1] = mouse;
-			snakes[0] = snake;
-			SDL_Delay(1500);
-			
+		int a = 0;
+		bool end = false;
+		for(const auto &i: snakes){
+			if(i.end){
+				end = true;
+				break;
+			}
+			a++;
 		}
 
+		if(end){
+			bytes = 1;
+			SDLNet_TCP_Send(client, &bytes, sizeof(int));
+			SDLNet_TCP_Send(client, &a, sizeof(int));
+			visual.font_render({255,255,255,255},snakes[a].name + " has perished");
+			SDL_Delay(1500);
 
+		
+
+			snakes[0] = snake;
+			snakes[1] = mouse;
+
+			//return 0;
+		} else {
+			bytes = 0;
+			SDLNet_TCP_Send(client, &bytes, sizeof(int));
+		}
 
 		SDL_Delay(time_left(next_time));
 		next_time += INTERVAL;
