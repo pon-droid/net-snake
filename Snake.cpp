@@ -15,9 +15,11 @@ Snake::Snake(int x, int y, SDL_Colour col, std::string username){
 
     name = username;
 
+    id = 0;
+
 }
 
-Snake::Snake(){
+Snake::Snake(int new_id){
     dx = 0; dy = -1;
     body.push_back({0,0});
 
@@ -26,6 +28,8 @@ Snake::Snake(){
     colour = {255,255,255,255};
 
     name = "NULL";
+
+    id = new_id;
 }
 
 void Snake::control(){

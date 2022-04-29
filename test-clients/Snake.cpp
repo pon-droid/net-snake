@@ -15,6 +15,8 @@ Snake::Snake(int x, int y, SDL_Colour col, std::string username){
 
     name = username;
 
+    index = 0;
+
 }
 
 Snake::Snake(){

@@ -27,6 +27,7 @@ struct Visual{
     void update_state(Snake& s, int random);
     void font_render(const SDL_Colour colour, const std::string info);
     void update_buffer(const std::vector<Snake>& snakes);
+    void draw_lobby(const std::vector<Snake>& snakes);
     ~Visual();
     
     

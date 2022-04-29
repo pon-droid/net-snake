@@ -11,13 +11,12 @@ TCPsocket Network::begin_host(const char *addr, const Uint16 port){
 
 }
 
-void Network::connect_clients(const int CLIENT_COUNT, std::vector<Snake>& snakes){
-		std::cout << "Not\n";
+void Network::connect_clients(std::vector<Snake>& snakes){
+/*
 
 	server = begin_host(NULL,1234);
 
     
-	std::cout << "Not\n";
 
 
 	for(int i = 0; i < CLIENT_COUNT; i++){
@@ -30,12 +29,44 @@ void Network::connect_clients(const int CLIENT_COUNT, std::vector<Snake>& snakes
 			}
 		}
 	}
-	std::cout << "Not\n";
 
 	Snake tmp;
 	for(int i = 0; i < CLIENT_COUNT + 1; i++){
 		snakes.push_back(tmp);
 	}
+*/
+
+	server = begin_host(NULL, 1234);
+
+	int time = SDL_GetTicks();
+
+	TCPsocket client;
+	while(true){
+		client = SDLNet_TCP_Accept(server);
+		if(client){
+			clients.push_back(client);
+
+			int strlength;
+
+			SDLNet_TCP_Recv(client, &strlength, sizeof(int));
+
+			char player_name[strlength];
+			SDLNet_TCP_Recv(client, player_name, strlength);
+
+			Snake snake;
+			snake.name = player_name;
+
+			snake.index = clients.size() - 1;
+
+			SDLNet_TCP_Recv(client, &snake.colour, sizeof(SDL_Colour));
+			SDLNet_TCP_Send(client, &snake.index, sizeof(int));
+
+			return;
+		} /*else if((SDL_GetTicks() - time) > 500){
+			return;
+		}*/
+	}
+
 
 
 }
@@ -54,6 +85,7 @@ void Network::setup_players(std::vector<Snake>& snakes){
 		snakes[i].name = tmp;
 
 		SDLNet_TCP_Recv(clients[cli_num], &snakes[i].colour, sizeof(SDL_Colour));
+		SDLNet_TCP_Send(clients[cli_num], &i, sizeof(int));
 	}
 
 }
@@ -70,6 +102,24 @@ void Network::send_snakes(const std::vector<Snake>& snakes){
 		}
 
 	}
+}
+
+int Network::init_send_snake(const Snake& s){
+	int size = strlen(s.name.c_str()) + 1;
+
+	const char *string = s.name.c_str();
+
+	Segment dir;
+	dir.x = s.dx;
+	dir.y = s.dy;
+
+	SDLNet_TCP_Send(server, &size, sizeof(int));
+	SDLNet_TCP_Send(server, string, size);
+	SDLNet_TCP_Send(server, &s.colour, sizeof(SDL_Colour));
+	int element;
+	SDLNet_TCP_Recv(server, &element, sizeof(int));
+
+	return element;
 }
 
 void Network::send_snake(const Snake& s){

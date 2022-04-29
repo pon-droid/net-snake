@@ -18,7 +18,7 @@ struct Segment{
 
 struct Snake {
     Snake(int x, int y, SDL_Colour col, std::string username);
-    Snake();
+    Snake(int id);
 
 	std::deque<Segment> body;
 	int dx, dy;
@@ -31,6 +31,8 @@ struct Snake {
     void control();
     void check_col(const std::vector<Snake>& snakes, int element);
     void update();
+
+    int id;
     
 
     

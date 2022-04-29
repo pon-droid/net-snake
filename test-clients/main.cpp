@@ -75,33 +75,16 @@ void check_snakes(const std::vector<Snake>& snakes){
 
 
 int return_main(){
-	TCPsocket client = begin_host("127.0.0.1", 1234);
+	Network network;
+	network.server = begin_host("127.0.0.1", 1234);
 
 	Snake snake(0,0,{255,255,255,255},"dash");
 
-	int size = strlen(snake.name.c_str()) + 1;
 
-	const char *string = snake.name.c_str();
 
-	Segment dir;
-	dir.x = snake.dx;
-	dir.y = snake.dy;
+	int element = network.init_send_snake(snake);
 
-	SDLNet_TCP_Send(client, &size, sizeof(int));
-	SDLNet_TCP_Send(client, string, size);
-	SDLNet_TCP_Send(client, &snake.colour, sizeof(SDL_Colour));
 	
-	//SDLNet_TCP_Send(client, &dir, sizeof(Segment));
-
-	Visual visual;
-
-	std::vector<Snake> snakes;
-	snakes.push_back(snake);
-
-	while(run()){
-		visual.update_buffer(snakes);
-		
-	}
 
 	
 

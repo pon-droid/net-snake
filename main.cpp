@@ -1,4 +1,4 @@
-#include "Network.h"
+#include "Server.h"
 #include <time.h>
 
 #define INTERVAL (60)
@@ -77,32 +77,56 @@ enum {LOBBY, GAME};
 
 
 int return_main(){
-		std::cout << "Work\n";
 
+/*
 	Network network;
-		std::cout << "Work\n";
+		std::cout << "work\n";
+
+	Visual visual;
+			std::cout << "work\n";
+
+
 
 
 	std::vector<Snake> snakes;
+
+	Snake me(0,0,{255,0,0,255}, "htirpone");
+	//Snake she(0,0,{255,0,0,255}, "dashi");
 	
-		std::cout << "Work\n";
+
+	snakes.push_back(me);
+	//snakes.push_back(she);
+	std::cout << "set\n";
 
 
-	network.connect_clients(2, snakes);
 
-	snakes[0] = Snake(0,0,{255,0,0,255}, "htirpone");
+	///network.setup_players(snakes);
 
 
-	network.setup_players(snakes);
-
-	for(const auto &i: snakes){
-		std::cout << i.name << "\n";
-	}
 	
 	int state = LOBBY;
 
-	while(state != GAME){
+	int CLIENT_COUNT = 1;
 
+	
+	std::cout << "work\n";
+	while(run()){
+		network.connect_clients(snakes);
+		visual.draw_lobby(snakes);
+		std::cout << snakes.size() << std::endl;
+	}
+	*/
+
+	Visual visual;
+	Server server;
+
+	std::vector<Snake>snakes;
+	//Snake me(0,0, {255,0,0,255}, "big pon");
+	snakes.push_back({0,0, {255,0,0,255}, "big pon"});
+
+	while(run()){
+		server.catch_clients(snakes);
+		visual.draw_lobby(snakes);
 	}
 
 

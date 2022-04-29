@@ -31,6 +31,8 @@ struct Snake {
     void control();
     void check_col(const std::vector<Snake>& snakes, int element);
     void update();
+
+    int index;
     
 
     
