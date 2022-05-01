@@ -105,10 +105,15 @@ void Visual::draw_lobby(const std::vector<Snake>& snakes){
 	SDL_SetRenderDrawColor(rend,0,0,0,255);
 	SDL_RenderClear(rend);
 
-	auto render_name = [&](const SDL_Colour colour, const std::string info){
+	auto render_name = [&](const SDL_Colour colour, const std::string info, const int index){
 		SDL_Rect rect;
+		//rect.x = SCR_W/2 - 200;
+		//rect.y = SCR_H/2 - 50;
+		//rect.w = 300;
+		//rect.h = 50;
+
 		rect.x = SCR_W/2 - 200;
-		rect.y = SCR_H/2 - 50;
+		rect.y = 50 * index;
 		rect.w = 300;
 		rect.h = 50;
 		
@@ -120,9 +125,11 @@ void Visual::draw_lobby(const std::vector<Snake>& snakes){
 		SDL_DestroyTexture(text);
 		SDL_FreeSurface(surf);
 	};
-
+	int k = 0;
 	for(const auto &i: snakes){
-		render_name(i.colour, i.name);
+	    
+		render_name(i.colour, i.name, k);
+		k++;
 	}
 
 	SDL_RenderPresent(rend);

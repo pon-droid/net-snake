@@ -126,6 +126,7 @@ int return_main(){
 
 	while(run()){
 		server.catch_clients(snakes);
+		server.sync_lobby(snakes);
 		visual.draw_lobby(snakes);
 	}
 
