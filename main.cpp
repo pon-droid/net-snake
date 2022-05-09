@@ -125,8 +125,10 @@ int return_main(){
 	snakes.push_back({0,0, {255,0,0,255}, "big pon"});
 
 	while(run()){
-		server.catch_clients(snakes);
-		server.sync_lobby(snakes);
+		if(server.catch_clients(snakes)){
+			server.sync_lobby(snakes);			
+		}
+
 		visual.draw_lobby(snakes);
 	}
 

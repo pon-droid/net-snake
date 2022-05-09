@@ -58,3 +58,27 @@ void Client::sync_lobby(std::vector<Snake>& snakes){
 		SDLNet_TCP_Recv(server, &snake.colour, sizeof(SDL_Colour));
 	} 
 }
+
+void Client::rec_list(std::vector<Snake>& snakes){
+	if(!in_server){
+		return;
+	}
+
+	int size;
+	SDLNet_TCP_Recv(server, &size, sizeof(int));
+
+	snakes.resize(size);
+
+	for(int i = 1; i < size; i++){
+		SDLNet_TCP_Recv(server, &size, sizeof(int));
+		char name[size];
+		SDLNet_TCP_Recv(server, name, size);
+		Snake snake(i);
+		SDLNet_TCP_Recv(server, &snake.colour, sizeof(SDL_Colour));
+
+		snakes[i] = snake;
+		
+		
+		
+	}
+}
