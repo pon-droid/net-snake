@@ -1,11 +1,9 @@
-#include "Visual.h"
+#include "Server.h"
 #include <time.h>
 
 #define INTERVAL (60)
 
-enum States {
-	END
-};
+
 
 Uint32 time_left(Uint32 time){
 	auto now = SDL_GetTicks();
@@ -75,12 +73,101 @@ void check_snakes(const std::vector<Snake>& snakes){
 }
 */
 
+enum {LOBBY, GAME};
+
+
+int return_main(){
+
+/*
+	Network network;
+		std::cout << "work\n";
+
+	Visual visual;
+			std::cout << "work\n";
+
+
+
+
+	std::vector<Snake> snakes;
+
+	Snake me(0,0,{255,0,0,255}, "htirpone");
+	//Snake she(0,0,{255,0,0,255}, "dashi");
+	
+
+	snakes.push_back(me);
+	//snakes.push_back(she);
+	std::cout << "set\n";
+
+
+
+	///network.setup_players(snakes);
+
+
+	
+	int state = LOBBY;
+
+	int CLIENT_COUNT = 1;
+
+	
+	std::cout << "work\n";
+	while(run()){
+		network.connect_clients(snakes);
+		visual.draw_lobby(snakes);
+		std::cout << snakes.size() << std::endl;
+	}
+	*/
+	
+/*
+	Visual visual;
+	Server server;
+
+	std::vector<Snake>snakes;
+	//Snake me(0,0, {255,0,0,255}, "big pon");
+	snakes.push_back({0,0, {255,0,0,255}, "big pon"});
+
+	while(run()){
+		if(server.catch_clients(snakes)){
+			server.sync_lobby(snakes);			
+		}
+
+		visual.draw_lobby(snakes);
+	}
+*/
+
+    Visual visual;
+    Server server;
+
+    std::vector<Snake> snakes;
+    
+    snakes.push_back({0,0, {255,0,0,255}, "big pon"});
+
+    auto next_time = SDL_GetTicks() + INTERVAL;
+
+    while(run()){
+    	server.catch_clients(snakes);
+    	server.send_list(snakes);
+
+    	visual.draw_lobby(snakes);
+
+    	SDL_Delay(time_left(next_time));
+		next_time += INTERVAL;
+    }
+
+	return 0;
+}
+
 int main(int argc, char **argv){
 	SDL_Init(SDL_INIT_EVERYTHING);
 	TTF_Init();
 	SDLNet_Init();
 
 	srand(time(NULL));
+
+
+	std::cout << "Work\n";
+	return return_main();
+
+
 
 	
 	std::vector<Snake> snakes;
@@ -96,10 +183,17 @@ int main(int argc, char **argv){
 
 	
 
+	TCPsocket serv = begin_host(NULL,1234);
+	TCPsocket client;
+
 	
-	TCPsocket client = begin_host("101.190.18.1",1234);
 
-
+	while(1){
+		client = SDLNet_TCP_Accept(serv);
+		if(client){
+			break;
+		}
+	}
 	
 	/*
     double t = 0.0;
@@ -156,28 +250,27 @@ int main(int argc, char **argv){
 
 		//snakes.front().update();
 
-		snakes.back().update();
-		
+		int random = rand() % (MAP_W * MAP_H);
 
-		
+		snakes.front().update();
 
-		SDLNet_TCP_Recv(client, &bytes, sizeof(int));
-		SDLNet_TCP_Recv(client, &snakes.back().hit, sizeof(bool));
 
-		snakes.front().body.resize(bytes);
-
-		for(auto &i: snakes.front().body){
-			SDLNet_TCP_Recv(client,&i,sizeof(Segment));
-		}
-
-		bytes = snakes.back().body.size();
+		bytes = snakes.front().body.size();
 
 		SDLNet_TCP_Send(client, &bytes, sizeof(int));
+		SDLNet_TCP_Send(client, &snakes.back().hit, sizeof(bool));
 
-		
 
-		for(const auto& i: snakes.back().body){
-			SDLNet_TCP_Send(client, &i, sizeof(Segment));
+		for(const auto &i: snakes.front().body){
+			SDLNet_TCP_Send(client,&i,sizeof(Segment));
+		}
+
+		SDLNet_TCP_Recv(client, &bytes, sizeof(int));
+
+		snakes.back().body.resize(bytes);
+
+		for(auto& i: snakes.back().body){
+			SDLNet_TCP_Recv(client, &i, sizeof(Segment));
 		}
 
 		/*
@@ -187,47 +280,55 @@ int main(int argc, char **argv){
 			visual.update_state(snakes[i]);
 		}
 		*/
+		if(visual.apple){
+			random = visual.last_pos;
+		}
 
-		//visual.update_state(snakes.back());
-
-		int random = 0;
-
-		visual.MAP.fill(0);
-
-		SDLNet_TCP_Recv(client, &random, sizeof(int));
+		SDLNet_TCP_Send(client, &random, sizeof(int));
 
 
-		visual.MAP[random] = 1;
+		visual.update_state(snakes.back(),random);
+		visual.update_state(snakes.front(),random);
 
 
-
-		
-
-		
 			
 	    visual.update_buffer(snakes);
+
+		snakes.back().check_col(snakes,1);
+		snakes.front().check_col(snakes,0);
 		
 
 		//check_snakes(snakes);
 
 		
 
-		SDLNet_TCP_Recv(client, &bytes, sizeof(int));
-		
-
-
-
-		if(bytes == 1){
-			SDLNet_TCP_Recv(client, &bytes, sizeof(int));
-
-			visual.font_render({255,255,255,255},snakes[bytes].name + " has perished");
-			snakes[1] = mouse;
-			snakes[0] = snake;
-			SDL_Delay(1500);
-			
+		int a = 0;
+		bool end = false;
+		for(const auto &i: snakes){
+			if(i.end){
+				end = true;
+				break;
+			}
+			a++;
 		}
 
+		if(end){
+			bytes = 1;
+			SDLNet_TCP_Send(client, &bytes, sizeof(int));
+			SDLNet_TCP_Send(client, &a, sizeof(int));
+			visual.font_render({255,255,255,255},snakes[a].name + " has perished");
+			SDL_Delay(1500);
 
+		
+
+			snakes[0] = snake;
+			snakes[1] = mouse;
+
+			//return 0;
+		} else {
+			bytes = 0;
+			SDLNet_TCP_Send(client, &bytes, sizeof(int));
+		}
 
 		SDL_Delay(time_left(next_time));
 		next_time += INTERVAL;

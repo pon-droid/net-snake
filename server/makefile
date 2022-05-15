@@ -5,7 +5,7 @@ LD=$(CROSS)ld
 AR=$(CROSS)ar
 PKG_CONFIG=$(CROSS)pkg-config
 
-FILES=Snake.cpp Visual.cpp Network.cpp main.cpp
+FILES=Snake.cpp Visual.cpp Server.cpp Client.cpp main.cpp
 
 PKGS=sdl2 SDL2_net SDL2_ttf
 

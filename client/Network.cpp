@@ -11,6 +11,11 @@ TCPsocket Network::begin_host(const char *addr, const Uint16 port){
 
 }
 
+Network::Network(){
+	server = begin_host(NULL, 1234);
+
+}
+
 void Network::connect_clients(std::vector<Snake>& snakes){
 /*
 
@@ -36,7 +41,6 @@ void Network::connect_clients(std::vector<Snake>& snakes){
 	}
 */
 
-	server = begin_host(NULL, 1234);
 
 	int time = SDL_GetTicks();
 
@@ -48,18 +52,18 @@ void Network::connect_clients(std::vector<Snake>& snakes){
 
 			int strlength;
 
-			SDLNet_TCP_Recv(client, &strlength, sizeof(int));
+			SDLNet_TCP_Recv(clients.back(), &strlength, sizeof(int));
 
 			char player_name[strlength];
-			SDLNet_TCP_Recv(client, player_name, strlength);
+			SDLNet_TCP_Recv(clients.back(), player_name, strlength);
 
 			Snake snake;
 			snake.name = player_name;
 
 			snake.index = clients.size() - 1;
 
-			SDLNet_TCP_Recv(client, &snake.colour, sizeof(SDL_Colour));
-			SDLNet_TCP_Send(client, &snake.index, sizeof(int));
+			SDLNet_TCP_Recv(clients.back(), &snake.colour, sizeof(SDL_Colour));
+			SDLNet_TCP_Send(clients.back(), &snake.index, sizeof(int));
 
 			return;
 		} /*else if((SDL_GetTicks() - time) > 500){

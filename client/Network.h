@@ -6,6 +6,8 @@ struct Network {
     
     TCPsocket begin_host(const char *addr, const Uint16 port);
 
+    Network();
+
     
 
     void connect_clients(std::vector<Snake>& snakes);
