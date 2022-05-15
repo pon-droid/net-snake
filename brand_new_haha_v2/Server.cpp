@@ -21,7 +21,7 @@ Server::Server(){
 	server = bind_to_TCP("host", 1234);
 }
 
-bool Server::catch_clients(std::vector<Snake>& snakes){
+void Server::catch_clients(std::vector<Snake>& snakes){
 	TCPsocket client = SDLNet_TCP_Accept(server);
 
 	if(client){
@@ -46,11 +46,7 @@ bool Server::catch_clients(std::vector<Snake>& snakes){
 		SDLNet_TCP_Recv(client, &snake.colour, sizeof(SDL_Colour));
 
 		snakes.push_back(snake);
-
-		return true;
 	}
-
-	return false;
 }
 
 void Server::send_player_info(const std::vector<Snake>& snakes){
@@ -79,55 +75,17 @@ void Server::send_snakes(const std::vector<Snake>& snakes){
 }
 
 void Server::sync_lobby(const std::vector<Snake>& snakes){
-
-  for(const auto &i: clients){    
+	for(const auto &i: clients){
 		for(const auto &j: snakes){
             int size = snakes.size();
 		    SDLNet_TCP_Send(i, &size, sizeof(int));
 		    
 		    const char* name = j.name.c_str();
 		    size = strlen(name) + 1;
-
-		    std::cout << size << "\n";
 		    
 			SDLNet_TCP_Send(i, &size, sizeof(int));
 			SDLNet_TCP_Send(i, name, size);
 			SDLNet_TCP_Send(i, &j.colour, sizeof(SDL_Colour));
 		}
-}
-
-
-    
-		    
-
-}
-
-void Server::send_list(const std::vector<Snake>& snakes){
-    if( !(clients.size() > 0)){
-    	return;
-    }
-	auto collate = [&](TCPsocket client, Snake s){
-		//int size = snakes.size();
-
-		const char* name = s.name.c_str();
-       
-		//SDLNet_TCP_Send(client, &size, sizeof(int));
-		int size = strlen(s.name.c_str()) + 1;
-		SDLNet_TCP_Send(client, &size, sizeof(int));
-		SDLNet_TCP_Send(client, name, size);
-		
-
-		SDLNet_TCP_Send(client, &s.colour, sizeof(SDL_Colour));
-	};
-
-	for(const auto &i: clients){
-	    int size = snakes.size();
-	    SDLNet_TCP_Send(i, &size, sizeof(int));
-		for(const auto &j: snakes){
-			collate(i,j);
-		}
 	}
-
-	
 }
-

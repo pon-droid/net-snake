@@ -1,4 +1,5 @@
-#include "Server.h"
+#include "Visual.h"
+#include "Client.h"
 #include <time.h>
 
 #define INTERVAL (60)
@@ -116,42 +117,27 @@ int return_main(){
 		std::cout << snakes.size() << std::endl;
 	}
 	*/
-	
-/*
+
 	Visual visual;
-	Server server;
+	Client client("127.0.0.1");
 
 	std::vector<Snake>snakes;
 	//Snake me(0,0, {255,0,0,255}, "big pon");
-	snakes.push_back({0,0, {255,0,0,255}, "big pon"});
+	
+	Snake me(0,0, {0,0,255,255}, "brother from other");
+	snakes.push_back(me);
+
+
 
 	while(run()){
-		if(server.catch_clients(snakes)){
-			server.sync_lobby(snakes);			
-		}
-
+		client.join_server(snakes.front());
+		//std::cout << "After join\n";
+		client.rec_list(snakes);
+       //std::cout << "After sync\n";
 		visual.draw_lobby(snakes);
+
 	}
-*/
 
-    Visual visual;
-    Server server;
-
-    std::vector<Snake> snakes;
-    
-    snakes.push_back({0,0, {255,0,0,255}, "big pon"});
-
-    auto next_time = SDL_GetTicks() + INTERVAL;
-
-    while(run()){
-    	server.catch_clients(snakes);
-    	server.send_list(snakes);
-
-    	visual.draw_lobby(snakes);
-
-    	SDL_Delay(time_left(next_time));
-		next_time += INTERVAL;
-    }
 
 	return 0;
 }

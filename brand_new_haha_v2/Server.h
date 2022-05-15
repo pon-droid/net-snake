@@ -11,10 +11,8 @@ struct Server {
 	//std::vector<TCPsocket>clients;
 	std::vector<TCPsocket>clients;
 	TCPsocket server;	
-	bool catch_clients(std::vector<Snake>& snakes);
+	void catch_clients(std::vector<Snake>& snakes);
 	void send_player_info(const std::vector<Snake>& snakes);
 	void send_snakes(const std::vector<Snake>& snakes);
 	void sync_lobby(const std::vector<Snake>& snakes);
-	void send_list(const std::vector<Snake>& snakes);
-	void send_min(const std::vector<Snake>& snakes);
 };
