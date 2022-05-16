@@ -24,4 +24,6 @@
 
 #define S_SPEED (0.01)
 
+enum {LOBBY, GAME};
+
 

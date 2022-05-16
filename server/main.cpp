@@ -73,10 +73,10 @@ void check_snakes(const std::vector<Snake>& snakes){
 }
 */
 
-enum {LOBBY, GAME};
+//enum {LOBBY, GAME};
 
 
-int return_main(){
+std::vector<Snake> lobby_mode(Visual& visual, Server& server){
 
 /*
 	Network network;
@@ -134,8 +134,8 @@ int return_main(){
 	}
 */
 
-    Visual visual;
-    Server server;
+    //Visual visual;
+    //Server server;
 
     std::vector<Snake> snakes;
     
@@ -143,17 +143,37 @@ int return_main(){
 
     auto next_time = SDL_GetTicks() + INTERVAL;
 
+    int state = LOBBY;
+
     while(run()){
+        const Uint8* keys = SDL_GetKeyboardState(NULL);
+
+        if(keys[SDL_SCANCODE_9]){
+        	state = GAME;
+
+        }
     	server.catch_clients(snakes);
     	server.send_list(snakes);
 
     	visual.draw_lobby(snakes);
 
+    	server.state_signal(state);
+
+    	if(state == GAME){
+    		        	while(run()){
+        		
+        	}
+
+        	break;
+    	}
+
     	SDL_Delay(time_left(next_time));
 		next_time += INTERVAL;
+
+		
     }
 
-	return 0;
+	return snakes;
 }
 
 int main(int argc, char **argv){
@@ -165,7 +185,12 @@ int main(int argc, char **argv){
 
 
 	std::cout << "Work\n";
-	return return_main();
+
+	Visual visual;
+	Server server;
+
+	lobby_mode(visual,server);
+	return 0;
 
 
 

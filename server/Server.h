@@ -17,4 +17,5 @@ struct Server {
 	void sync_lobby(const std::vector<Snake>& snakes);
 	void send_list(const std::vector<Snake>& snakes);
 	void send_min(const std::vector<Snake>& snakes);
+	void state_signal(const int& STATE);
 };

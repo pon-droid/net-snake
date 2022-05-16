@@ -131,3 +131,8 @@ void Server::send_list(const std::vector<Snake>& snakes){
 	
 }
 
+void Server::state_signal(const int& STATE){
+	for(const auto &i: clients){
+		SDLNet_TCP_Send(i, &STATE, sizeof(int));
+	}
+}

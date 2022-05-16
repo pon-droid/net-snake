@@ -96,3 +96,15 @@ void Client::rec_list(std::vector<Snake>& snakes){
 		
 	}
 }
+
+bool Client::state_signal(){
+	int state = LOBBY;
+
+	SDLNet_TCP_Recv(server, &state, sizeof(int));
+
+	if(state == GAME){
+		return true;
+	} else {
+		return false;
+	}
+}

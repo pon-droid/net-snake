@@ -74,7 +74,7 @@ void check_snakes(const std::vector<Snake>& snakes){
 }
 */
 
-enum {LOBBY, GAME};
+//enum {LOBBY, GAME};
 
 
 int return_main(){
@@ -127,7 +127,7 @@ int return_main(){
 	Snake me(0,0, {0,0,255,255}, "brother from other");
 	snakes.push_back(me);
 
-
+    auto next_time = SDL_GetTicks() + INTERVAL;
 
 	while(run()){
 		client.join_server(snakes.front());
@@ -135,6 +135,13 @@ int return_main(){
 		client.rec_list(snakes);
        //std::cout << "After sync\n";
 		visual.draw_lobby(snakes);
+
+		if(client.state_signal()){
+			return 1;
+		}
+
+		SDL_Delay(time_left(next_time));
+		next_time += INTERVAL;
 
 	}
 

@@ -10,4 +10,5 @@ struct Client {
 	void sync_lobby(std::vector<Snake>& snakes);
 	bool in_server;
 	void rec_list(std::vector<Snake>& snakes);
+	bool state_signal();
 };
