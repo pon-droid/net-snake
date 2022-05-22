@@ -47,6 +47,10 @@ bool Server::catch_clients(std::vector<Snake>& snakes){
 
 		snakes.push_back(snake);
 
+		//int size = snakes.size() - 1;
+
+		//SDLNet_TCP_Send(client, &size, sizeof(int)); // So that clients can identify their snake
+
 		return true;
 	}
 
@@ -70,12 +74,66 @@ void Server::send_player_info(const std::vector<Snake>& snakes){
 
 void Server::send_snakes(const std::vector<Snake>& snakes){
 
-	for(const auto &i: snakes){
+/*	for(const auto &i: snakes){
 		for(const auto &j: i.body){
 			SDLNet_TCP_Send(clients[i.id], &j, sizeof(Segment));
 		}
+	} */
+
+	auto compact = [&](const Snake snake){
+    	std::string buffer;
+	    buffer += "V";
+
+
+		for(const auto &i: snake.body){
+			buffer += '0' + i.x;
+			buffer += '0' + i.y;
+		}
+
+		return buffer;
+	};
+
+
+	
+
+	for(const auto &i: clients){
+		for(const auto &j: snakes){
+				//SDLNet_TCP_Send(i, &j.id, sizeof(int));
+		
+				std::string data = compact(j);
+		
+				const char* positions = data.c_str();
+		
+				int size = strlen(positions) + 1;
+				SDLNet_TCP_Send(i, &size, sizeof(int));
+				SDLNet_TCP_Send(i, positions, size);
+			}
 	}
 	
+}
+
+void Server::receive_inputs(std::vector<Snake>& snakes){
+/*
+	for(const auto &i: clients){
+		int dx = 0;
+		int dy = 0;
+
+		SDLNet_TCP_Recv(i, &dx, sizeof(int));
+		SDLNet_TCP_Recv(i, &dy, sizeof(int));
+
+		
+	}
+*/
+	for(int i = 0; i < clients.size(); i++){
+		int dx = 0;
+		int dy = 0;
+
+		SDLNet_TCP_Recv(clients[i], &dx, sizeof(int));
+		SDLNet_TCP_Recv(clients[i], &dy, sizeof(int));
+
+		snakes[i+1].dx = dx;
+		snakes[i+1].dy = dy;
+	}
 }
 
 void Server::sync_lobby(const std::vector<Snake>& snakes){
@@ -106,15 +164,15 @@ void Server::send_list(const std::vector<Snake>& snakes){
     if( !(clients.size() > 0)){
     	return;
     }
-	auto collate = [&](TCPsocket client, Snake s){
+	auto collate = [&](const TCPsocket client, const Snake s){
 		//int size = snakes.size();
 
 		const char* name = s.name.c_str();
        
 		//SDLNet_TCP_Send(client, &size, sizeof(int));
-		int size = strlen(s.name.c_str()) + 1;
-		SDLNet_TCP_Send(client, &size, sizeof(int));
-		SDLNet_TCP_Send(client, name, size);
+		int nsize = strlen(s.name.c_str()) + 1;
+		SDLNet_TCP_Send(client, &nsize, sizeof(int));
+		SDLNet_TCP_Send(client, name, nsize);
 		
 
 		SDLNet_TCP_Send(client, &s.colour, sizeof(SDL_Colour));
@@ -142,3 +200,4 @@ bool Server::state_signal(const int& STATE){
 		return false;
 	}
 }
+

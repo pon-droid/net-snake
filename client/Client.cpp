@@ -3,6 +3,7 @@
 Client::Client(const std::string new_ip){
 	ip = new_ip;
 	in_server = false;
+	snake_num = 0;
 }
 
 TCPsocket Client::bind_to_TCP(std::string addr, const Uint16 port){
@@ -37,6 +38,10 @@ int Client::join_server(const Snake& s){
 		SDLNet_TCP_Send(server, &size, sizeof(int));
 		SDLNet_TCP_Send(server, name, size);
 		SDLNet_TCP_Send(server, &s.colour, sizeof(SDL_Colour));
+		
+		//SDLNet_TCP_Recv(server, &snake_num, sizeof(int));
+
+		
 
         in_server = true;
 		return 1;
@@ -98,6 +103,9 @@ void Client::rec_list(std::vector<Snake>& snakes){
 }
 
 bool Client::state_signal(){
+    if(!in_server){
+    	return false;
+    }
 	int state = LOBBY;
 
 	SDLNet_TCP_Recv(server, &state, sizeof(int));
@@ -107,4 +115,44 @@ bool Client::state_signal(){
 	} else {
 		return false;
 	}
+}
+
+void Client::receive_snakes(std::vector<Snake>& snakes){
+   auto decompact = [&](const std::string buffer){
+        std::deque<Segment>body;
+        
+		if(buffer[0] != 'V'){
+			return body;
+		}
+
+		//int num = buffer[1] - '0';
+    	
+		for(int i = 1; i < buffer.size(); i+=2){
+			Segment seg;
+			seg.x = buffer[i] - '0';
+			seg.y = buffer[i+1] - '0';
+			body.push_back(seg);
+		}
+
+
+		return body;
+
+  };
+
+    for(auto &i: snakes){
+        int size = 0;
+    	SDLNet_TCP_Recv(server, &size, sizeof(int));
+    	char buffer[size];
+    	SDLNet_TCP_Recv(server, buffer, size);
+
+
+        i.body = decompact(buffer);
+    	
+    }
+	
+}
+
+void Client::send_dir(const int& dx, const int& dy){
+	SDLNet_TCP_Send(server, &dx, sizeof(int));
+	SDLNet_TCP_Send(server, &dy, sizeof(int));
 }

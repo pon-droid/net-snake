@@ -108,7 +108,7 @@ void Snake::check_col(const std::vector<Snake>& snakes, int element){
 
 void Snake::update(){
 
-    control();
+    //control();
 
 
     body.push_front({body.front().x + dx, body.front().y + dy});

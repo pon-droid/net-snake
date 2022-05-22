@@ -139,7 +139,7 @@ std::vector<Snake> lobby_mode(Visual& visual, Server& server, int& STATE){
 
     std::vector<Snake> snakes;
     
-    snakes.push_back({0,0, {255,0,0,255}, "big pon"});
+    snakes.push_back({10,10, {255,0,0,255}, "big pon"});
 
     auto next_time = SDL_GetTicks() + INTERVAL;
 
@@ -156,6 +156,7 @@ std::vector<Snake> lobby_mode(Visual& visual, Server& server, int& STATE){
     	visual.draw_lobby(snakes);
 
     	if(server.state_signal(STATE)){
+    	    snakes[1] = {10,20, {0,0,255,255}, "dash"};
     		break;
     	}
 
@@ -167,6 +168,25 @@ std::vector<Snake> lobby_mode(Visual& visual, Server& server, int& STATE){
     }
 
 	return snakes;
+}
+
+void game_mode(Visual& visual, Server& server, std::vector<Snake>& snakes){
+	auto next_time = SDL_GetTicks() + INTERVAL;
+
+	while(run()){
+		server.receive_inputs(snakes);
+		snakes.front().control();
+
+		for(auto &i: snakes) { i.update(); }
+
+		visual.update_buffer(snakes);
+
+		server.send_snakes(snakes);
+
+		SDL_Delay(time_left(next_time));
+		next_time += INTERVAL;
+		
+	}
 }
 
 int main(int argc, char **argv){
@@ -182,7 +202,9 @@ int main(int argc, char **argv){
 	Visual visual;
 	Server server;
     int STATE = LOBBY;
-	std::vector<Snake> snakes = lobby_mode(visual,server, STATE);
+	auto snakes = lobby_mode(visual,server, STATE);
+
+	game_mode(visual, server, snakes);
 
 	
 	
