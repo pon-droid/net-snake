@@ -144,6 +144,7 @@ void Client::receive_snakes(std::vector<Snake>& snakes){
     	SDLNet_TCP_Recv(server, &size, sizeof(int));
     	char buffer[size];
     	SDLNet_TCP_Recv(server, buffer, size);
+    	//SDLNet_TCP_Recv(server, &i.end, sizeof(bool));
 
 
         i.body = decompact(buffer);
@@ -155,4 +156,11 @@ void Client::receive_snakes(std::vector<Snake>& snakes){
 void Client::send_dir(const int& dx, const int& dy){
 	SDLNet_TCP_Send(server, &dx, sizeof(int));
 	SDLNet_TCP_Send(server, &dy, sizeof(int));
+}
+
+void Client::receive_apple(std::array<int, (MAP_W*MAP_H)>& MAP){
+	int apple = 0;
+	SDLNet_TCP_Recv(server, &apple, sizeof(int));
+	MAP.fill(0);
+	MAP[apple] = 1;
 }

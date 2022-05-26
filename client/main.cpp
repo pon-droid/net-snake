@@ -181,14 +181,15 @@ void game_mode(Visual& visual, Client& client, std::vector<Snake> snakes){
         	return;
     	}
     };
-    int dx = 0;
-    int dy = 0;
+    int dx = 1;
+    int dy = 1;
     while(run()){
 
     	set_direction(dx,dy);
     	client.send_dir(dx,dy);
 
     	client.receive_snakes(snakes);
+    	client.receive_apple(visual.MAP);
     	visual.update_buffer(snakes);
     	
 
@@ -208,7 +209,7 @@ int main(int argc, char **argv){
 	std::cout << "Work\n";
 
 	Visual visual;
-	Client client("127.0.0.1");
+	Client client("124.183.33.112");
 
 	auto snakes = lobby_mode(visual, client);
 

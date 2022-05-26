@@ -107,9 +107,16 @@ void Server::send_snakes(const std::vector<Snake>& snakes){
 				int size = strlen(positions) + 1;
 				SDLNet_TCP_Send(i, &size, sizeof(int));
 				SDLNet_TCP_Send(i, positions, size);
+				//SDLNet_TCP_Send(i, &i.hit, sizeof(bool));
 			}
 	}
 	
+}
+
+void Server::send_map(const int& apple){
+	for(const auto &i: clients){
+		SDLNet_TCP_Send(i, &apple, sizeof(int));
+	}
 }
 
 void Server::receive_inputs(std::vector<Snake>& snakes){

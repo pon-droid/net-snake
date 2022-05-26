@@ -156,10 +156,9 @@ std::vector<Snake> lobby_mode(Visual& visual, Server& server, int& STATE){
     	visual.draw_lobby(snakes);
 
     	if(server.state_signal(STATE)){
-    	    snakes[1] = {10,20, {0,0,255,255}, "dash"};
     		break;
     	}
-
+        
 
     	SDL_Delay(time_left(next_time));
 		next_time += INTERVAL;
@@ -176,12 +175,14 @@ void game_mode(Visual& visual, Server& server, std::vector<Snake>& snakes){
 	while(run()){
 		server.receive_inputs(snakes);
 		snakes.front().control();
+		
 
-		for(auto &i: snakes) { i.update(); }
+		for(auto &i: snakes) { if(i.end){continue;} i.update(); visual.update_state(i); }
 
 		visual.update_buffer(snakes);
 
 		server.send_snakes(snakes);
+		server.send_map(visual.last_pos);
 
 		SDL_Delay(time_left(next_time));
 		next_time += INTERVAL;

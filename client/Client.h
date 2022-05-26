@@ -16,4 +16,5 @@ struct Client {
 
 	void receive_snakes(std::vector<Snake>& snakes);
 	void send_dir(const int& dx, const int& dy);
+	void receive_apple(std::array<int, (MAP_W*MAP_H)>& MAP);
 };

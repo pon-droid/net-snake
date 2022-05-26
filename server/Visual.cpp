@@ -59,11 +59,12 @@ void Visual::draw_snake(const Snake& s){
 	}
 }
 
-void Visual::update_state(Snake& s, int random){
+void Visual::update_state(Snake& s){
 	int element = (s.body.front().y) * MAP_W + (s.body.front().x);
 
 	
-
+    
+    
 	if(MAP[element]){
 		s.hit = true;
 		apple = false;
@@ -71,6 +72,7 @@ void Visual::update_state(Snake& s, int random){
 	}
 
 	if(!(apple)){
+	    int random = rand() % (MAP_W * MAP_H);
 		MAP[random] = 1;
 		last_pos = random;
 		apple = true;
